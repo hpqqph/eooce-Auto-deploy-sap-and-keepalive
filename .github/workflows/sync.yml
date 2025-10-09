@@ -1,0 +1,26 @@
+name: Sync Fork
+
+on:
+  schedule:
+    - cron: '0 7 * * *' # 每天 UTC 00:00 运行
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 获取所有历史记录
+
+      - name: Add upstream remote
+        run: |
+          git remote add upstream <https://github.com/eooce/Auto-deploy-sap-and-keepalive>
+          git fetch upstream
+
+      - name: Merge upstream changes
+        run: |
+          git checkout main # 替换为你的默认分支
+          git merge upstream/main --allow-unrelated-histories
+          git push origin main
